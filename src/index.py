@@ -12,8 +12,8 @@ CSV_COLUMN_NAMES = ["color", "status", "type", "dead"]
 SPECIES = ["dead"]
 # Lets define some constants to help us later on
 
-train_path = tf.keras.utils.get_file("test1.csv", "./test1.csv")
-test_path = tf.keras.utils.get_file("test1.csv", "./test1.csv")
+train_path = tf.keras.utils.get_file("test1.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1.csv")
+test_path = tf.keras.utils.get_file("test1.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1.csv")
 
 train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)
 test = pd.read_csv(test_path, names=CSV_COLUMN_NAMES, header=0)

@@ -1,4 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
+import pandas as pd
 import tensorflow as tf
 
 (train_images, train_labels), (
@@ -6,22 +7,28 @@ import tensorflow as tf
     test_labels,
 ) = tf.keras.datasets.mnist.load_data()
 
-import pandas as pd
 
-CSV_COLUMN_NAMES = ["color", "status", "type", "dead"]
+# CSV_COLUMN_NAMES = ["status", "type", "dead"]
+NUMERIC_COLUMNS = ["status", "type"]
+CATEGORICAL_COLUMNS = ["color"]
 SPECIES = ["notDead", "dead"]
 # Lets define some constants to help us later on
 
-train_path = tf.keras.utils.get_file("test1_copy.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
-test_path = tf.keras.utils.get_file("test1_copy.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
+train = pd.read_csv(
+    "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
+test = pd.read_csv(
+    "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
 
-train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)
-test = pd.read_csv(test_path, names=CSV_COLUMN_NAMES, header=0)
+train_y = train.pop("dead")
+test_y = test.pop("dead")
+
+# train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)
+# test = pd.read_csv(test_path, names=CSV_COLUMN_NAMES, header=0)
 # Here we use keras (a module inside of TensorFlow) to grab our datasets and read them into a pandas dataframe
 
 print("Train:", train)
-train_y = train.pop("dead")
-test_y = test.pop("dead")
+# train_y = train.pop("dead")
+# test_y = test.pop("dead")
 
 
 def input_fn(features, labels, training=True, batch_size=256):
@@ -37,8 +44,22 @@ def input_fn(features, labels, training=True, batch_size=256):
 
 # Feature columns describe how to use the input.
 my_feature_columns = []
-for key in train.keys():
-    my_feature_columns.append(tf.feature_column.numeric_column(key=key))
+
+# this is for categorical collumns to convert strings into unique ints
+for feature_name in CATEGORICAL_COLUMNS:
+    vocabulary = train[feature_name].unique()
+    print("Vocabulary: ", vocabulary)
+    categorical_column = tf.feature_column.categorical_column_with_vocabulary_list(
+        key=feature_name, vocabulary_list=vocabulary, dtype=tf.string, default_value=-1, num_oov_buckets=0)
+    # These must be wrapped https://stackoverflow.com/questions/48614819/items-of-feature-columns-must-be-a-featurecolumn-given-vocabularylistcategori
+    my_feature_columns.append(
+        tf.feature_column.indicator_column(categorical_column))
+
+
+for feature_name in NUMERIC_COLUMNS:
+    my_feature_columns.append(tf.feature_column.numeric_column(
+        key=feature_name, dtype=tf.int8))
+
 print("my feature columns: ", my_feature_columns)
 
 
@@ -51,7 +72,8 @@ classifier = tf.estimator.DNNClassifier(
 )
 
 
-classifier.train(input_fn=lambda: input_fn(train, train_y, training=True), steps=5000)
+classifier.train(input_fn=lambda: input_fn(
+    train, train_y, training=True), steps=5000)
 # We include a lambda to avoid creating an inner function previously
 
 
@@ -66,16 +88,16 @@ predict = {}
 print("Please type numeric values as prompted.")
 for feature in features:
     valid = True
-    while valid:
-        val = input(feature + ": ")
-        if not val.isdigit():
-            valid = False
+    val = input(feature + ": ")
+    if val.isdigit():
+        val = int(val)
 
-    predict[feature] = [float(val)]
+    predict[feature] = [val]
 
 predictions = classifier.predict(input_fn=lambda: input_fn2(predict))
 for pred_dict in predictions:
     class_id = pred_dict["class_ids"][0]
     probability = pred_dict["probabilities"][class_id]
     print("Class id: ", class_id, SPECIES)
-    print('Prediction is "{}" ({:.1f}%)'.format(SPECIES[class_id], 100 * probability))
+    print('Prediction is "{}" ({:.1f}%)'.format(
+        SPECIES[class_id], 100 * probability))

@@ -101,3 +101,10 @@ for pred_dict in predictions:
     print("Class id: ", class_id, SPECIES)
     print('Prediction is "{}" ({:.1f}%)'.format(
         SPECIES[class_id], 100 * probability))
+    evaluate()
+
+
+def evaluate():
+    eval_result = classifier.evaluate(
+        input_fn=lambda: input_fn(test, test_y, training=False))
+    print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))

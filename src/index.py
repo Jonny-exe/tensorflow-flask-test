@@ -94,6 +94,13 @@ for feature in features:
 
     predict[feature] = [val]
 
+
+def evaluate():
+    eval_result = classifier.evaluate(
+        input_fn=lambda: input_fn(test, test_y, training=False))
+    print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
+
+
 predictions = classifier.predict(input_fn=lambda: input_fn2(predict))
 for pred_dict in predictions:
     class_id = pred_dict["class_ids"][0]
@@ -102,9 +109,3 @@ for pred_dict in predictions:
     print('Prediction is "{}" ({:.1f}%)'.format(
         SPECIES[class_id], 100 * probability))
     evaluate()
-
-
-def evaluate():
-    eval_result = classifier.evaluate(
-        input_fn=lambda: input_fn(test, test_y, training=False))
-    print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))

@@ -9,11 +9,11 @@ import tensorflow as tf
 import pandas as pd
 
 CSV_COLUMN_NAMES = ["color", "status", "type", "dead"]
-SPECIES = ["dead"]
+SPECIES = ["notDead", "dead"]
 # Lets define some constants to help us later on
 
-train_path = tf.keras.utils.get_file("test1.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1.csv")
-test_path = tf.keras.utils.get_file("test1.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1.csv")
+train_path = tf.keras.utils.get_file("test1_copy.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
+test_path = tf.keras.utils.get_file("test1_copy.csv", "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
 
 train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)
 test = pd.read_csv(test_path, names=CSV_COLUMN_NAMES, header=0)
@@ -77,5 +77,5 @@ predictions = classifier.predict(input_fn=lambda: input_fn2(predict))
 for pred_dict in predictions:
     class_id = pred_dict["class_ids"][0]
     probability = pred_dict["probabilities"][class_id]
-
+    print("Class id: ", class_id, SPECIES)
     print('Prediction is "{}" ({:.1f}%)'.format(SPECIES[class_id], 100 * probability))

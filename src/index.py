@@ -15,11 +15,12 @@ SPECIES = ["notDead", "dead"]
 # Lets define some constants to help us later on
 
 train = pd.read_csv(
-    "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
+    "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1.csv")
 test = pd.read_csv(
     "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
 
 train_y = train.pop("dead")
+print(type(train))
 test_y = test.pop("dead")
 
 # train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)

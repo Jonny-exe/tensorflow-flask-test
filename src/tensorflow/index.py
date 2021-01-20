@@ -11,7 +11,7 @@ import tensorflow as tf
 # CSV_COLUMN_NAMES = ["status", "type", "dead"]
 NUMERIC_COLUMNS = ["status", "type"]
 CATEGORICAL_COLUMNS = ["color"]
-SPECIES = ["notDead", "dead"]
+RESULTS = ["notDead", "dead"]
 # Lets define some constants to help us later on
 
 train = pd.read_csv(
@@ -20,7 +20,6 @@ test = pd.read_csv(
     "https://raw.githubusercontent.com/Jonny-exe/tensorflow-text/main/src/test1_copy.csv")
 
 train_y = train.pop("dead")
-print(type(train))
 test_y = test.pop("dead")
 
 # train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)
@@ -106,7 +105,7 @@ predictions = classifier.predict(input_fn=lambda: input_fn2(predict))
 for pred_dict in predictions:
     class_id = pred_dict["class_ids"][0]
     probability = pred_dict["probabilities"][class_id]
-    print("Class id: ", class_id, SPECIES)
+    print("Class id: ", class_id, RESULTS)
     print('Prediction is "{}" ({:.1f}%)'.format(
-        SPECIES[class_id], 100 * probability))
+        RESULTS[class_id], 100 * probability))
     evaluate()
